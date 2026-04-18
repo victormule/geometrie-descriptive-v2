@@ -103,49 +103,49 @@ const sketch2 = (p) => {
     
     // Ajout d'ajustements basés sur l'orientation
     if (isPortrait()) {
-        baseSize = p.max(70, 80 * scaleFactor);
-        spacing = p.max(18, 24 * scaleFactor);
-        hoverSize = 90;
+        // Sur mobile portrait (~390px), scaleFactor ≈ 0.24 → on base tout sur p.width directement
+        let w = p.width;
 
-        titleSize = p.max(36, 44 * scaleFactor);
-        descriptionSize = p.max(28, 34 * scaleFactor);
-        description2Size = p.max(20, 24 * scaleFactor);
-        description3Size = p.max(10, 14 * scaleFactor);
-        description4Size = p.max(10, 14 * scaleFactor);
+        baseSize  = p.constrain(w * 0.11, 44, 80);
+        spacing   = p.constrain(w * 0.025, 8, 20);
+        hoverSize = baseSize * 1.15;
 
-        // Ajuster l'espacement entre les lignes proportionnellement, avec un minimum de 15px
-        lineSpacing = p.max(30,36 * scaleFactor);
-        lineSpacing2 = p.max(30, 40 * scaleFactor);
-        lineSpacing3 = p.max(12, 18 * scaleFactor);
-        lineSpacing4 = p.max(12, 18 * scaleFactor);
+        // Polices proportionnelles à la largeur écran
+        titleSize        = p.constrain(w * 0.055, 16, 28);
+        descriptionSize  = p.constrain(w * 0.042, 13, 22);
+        description2Size = p.constrain(w * 0.030, 10, 16);
+        description3Size = p.constrain(w * 0.028, 9, 14);
+        description4Size = p.constrain(w * 0.028, 9, 14);
 
-        // Ajuster l'écart entre le titre et les descriptions, avec un minimum de 20px
-        titleToDescriptionSpacing = p.max(40, 80 * scaleFactor);
+        lineSpacing  = p.constrain(w * 0.048, 18, 32);
+        lineSpacing2 = p.constrain(w * 0.040, 16, 28);
+        lineSpacing3 = p.constrain(w * 0.032, 13, 20);
+        lineSpacing4 = p.constrain(w * 0.032, 13, 20);
 
-        // Ajuster l'écart pour description2Y, description3Y, et description4Y
-        descriptionYShift = p.map(scaleFactor, 0, 1, 120, 0, true); // scaleFactor de 1 à 0, shift de 0 à 100
-        description2YShift = p.map(scaleFactor, 0, 1, 260, 0, true); // scaleFactor de 1 à 0, shift de 0 à 100
-        description3YShift = p.map(scaleFactor, 0, 1, 120, 0, true); // scaleFactor de 1 à 0, shift de 0 à 100
-        description4YShift = p.map(scaleFactor, 0, 1, 120, 0, true); // scaleFactor de 1 à 0, shift de 0 à 100
-        
-        // Calculer les largeurs de ligne
-        lineWidth = p.max(500, 650 * scaleFactor);
-        lineWidth2 = p.max(500, 600 * scaleFactor);
-        lineWidth3 = p.max(160, 230 * scaleFactor);
-        lineWidth4 = p.max(160, 230 * scaleFactor);
+        titleToDescriptionSpacing = p.constrain(w * 0.08, 24, 50);
 
-        // Calculer les espacements des paragraphes
-        paragrapheSpacing = p.max(800, 1000 * scaleFactor);
-        paragrapheSpacing2 = p.max(800, 1000 * scaleFactor);
-        paragrapheSpacing3 = p.max(360, 550 * scaleFactor);
-        paragrapheSpacing4 = p.max(180, 280 * scaleFactor);
+        descriptionYShift  = 0;
+        description2YShift = titleSize * 2.5;
+        description3YShift = titleSize * 2.5;
+        description4YShift = titleSize * 2.5;
 
-        // Définir la marge pour descriptions2
+        // Texte sur toute la largeur avec marges
+        lineWidth  = w * 0.90;
+        lineWidth2 = w * 0.90;
+        lineWidth3 = w * 0.42;
+        lineWidth4 = w * 0.42;
+
+        // Position X : centré sur l'écran (le canvas est translaté au centre dans draw)
+        descriptionX  = -w / 2 + w * 0.05;
+        description2X = -w / 2 + w * 0.05;
+
+        // paragrapheSpacing sert au positionnement X de desc3/4 — on les met côte à côte
+        paragrapheSpacing  = w * 0.95;
+        paragrapheSpacing2 = w * 0.95;
+        paragrapheSpacing3 = w * 0.52;  // col gauche
+        paragrapheSpacing4 = w * 0.05;  // col droite
+
         margin = paragrapheSpacing2;
-
-        // Calculer description2X et description2Y
-        descriptionX = - 260 ;
-        description2X = p.width / 2 - margin -80;
         
     } else {
         baseSize = p.max(40, 50 * scaleFactor);
@@ -961,40 +961,32 @@ const sketch2 = (p) => {
             // Vérifier si descriptions3 existe et l'afficher
             if (currentText.descriptions3) {
                 p.textSize(description3Size);
-                const margin = paragrapheSpacing3;
-                let description3X = p.width / 2 - margin;
+                let description3X = isPortrait()
+                    ? -p.width / 2 + p.width * 0.05
+                    : p.width / 2 - paragrapheSpacing3;
                 let description3Y = titleY + titleToDescriptionSpacing + description3YShift;
 
-                // Aligner le texte à gauche
                 p.textAlign(p.LEFT, p.TOP);
-
-                // Utiliser uniquement drawColoredText sans p.text
                 currentText.descriptions3.forEach(line => {
                     drawColoredText(p, line, description3X, description3Y, lineWidth3);
-                    description3Y += lineSpacing3; // Ajouter l'espacement des lignes
+                    description3Y += lineSpacing3;
                 });
-
-                // Réinitialiser l'alignement pour éviter d'affecter d'autres textes
                 p.textAlign(p.CENTER, p.TOP);
             }
 
             // Vérifier si descriptions4 existe et l'afficher
             if (currentText.descriptions4) {
                 p.textSize(description4Size);
-                const margin = paragrapheSpacing4;
-                let description4X = p.width / 2 - margin;
+                let description4X = isPortrait()
+                    ? p.width * paragrapheSpacing4 - p.width / 2
+                    : p.width / 2 - paragrapheSpacing4;
                 let description4Y = titleY + titleToDescriptionSpacing + description4YShift + lineSpacing3 - 1;
 
-                // Aligner le texte à gauche
                 p.textAlign(p.LEFT, p.TOP);
-
-                // Utiliser uniquement drawColoredText sans p.text
                 currentText.descriptions4.forEach(line => {
                     drawColoredText(p, line, description4X, description4Y, lineWidth4);
-                    description4Y += lineSpacing4; // Ajouter l'espacement des lignes
+                    description4Y += lineSpacing4;
                 });
-
-                // Réinitialiser l'alignement pour éviter d'affecter d'autres textes
                 p.textAlign(p.CENTER, p.TOP);
             }
 
