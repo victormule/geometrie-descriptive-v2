@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Géométrie Descriptive — Collection de Reliefs</title>
+
+  <!-- Préchargement de la police pour éviter le flash et le double chargement -->
+  <link rel="preload" href="fonts/OldNewspaperTypes.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <!-- p5.js minifié depuis CDN (mise en cache navigateur entre sessions, ~950 KB vs 4.2 MB) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: 'OldNewspaperTypes';
+      src: url('fonts/OldNewspaperTypes.ttf') format('truetype');
+      font-display: swap;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas { display: block; }
+  </style>
+
+  <script>
+    // pointer:coarse = doigt (mobile/tablette) — plus fiable que le UserAgent
+    function isTouchDevice() {
+      return window.matchMedia('(pointer: coarse)').matches;
+    }
+
+    if (isTouchDevice()) {
+      document.write('<script src="openBox2.js"><\/script>');
+      document.write('<script src="textOverlay2.js"><\/script>');
+    } else {
+      document.write('<script src="openBox1.js"><\/script>');
+      document.write('<script src="textOverlay.js"><\/script>');
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>
